@@ -18,7 +18,10 @@ import { applyTransformations } from 'arx-level-generator/utils'
 import { Vector2 } from 'three'
 
 // reads the contents of the .env file
-const settings = new Settings()
+// pass in an optional object to override certain settings
+const settings = new Settings({
+  variant: 'premium', // always produce a premium version
+})
 
 // ---------------------------------------------
 
@@ -52,10 +55,10 @@ rooms.forEach((room) => {
 
 // ---------------------------------------------
 
+// add a zone right below the player's feet to change the fog color and
+// the draw distance (can be also used to set an ambience sound)
 const spawnZone = createZone({
   name: 'spawn-zone',
-  position: new Vector3(0, 0, 0),
-  size: new Vector3(100, Infinity, 100),
   backgroundColor: Color.fromCSS('#5a5f7a'),
   drawDistance: 2000,
 })
@@ -64,19 +67,25 @@ map.zones.push(spawnZone)
 
 // ---------------------------------------------
 
+// you can add meshes not just via rooms, but with helper functions from arx-level-generator
 const water = createPlaneMesh({
   size: new Vector2(200, 200),
   tileSize: 100,
+  // adding a water texture with additional flags to make it behave like water
   texture: Material.fromTexture(Texture.waterCavewater, {
     flags: ArxPolygonFlags.Water | ArxPolygonFlags.NoShadow,
     opacity: 80,
   }),
 })
 applyTransformations(water)
+// creating mesh by hand makes it absolute positioned, to make it relative to the
+// map's offset (6000/0/6000) you have to move it on all 3 axis
+// this can also be used to make additional adjustments
 water.translateX(map.config.offset.x)
 water.translateY(map.config.offset.y + 10)
 water.translateZ(map.config.offset.z + 900)
 applyTransformations(water)
+// add the mesh to the map
 map.polygons.addThreeJsMesh(water, { tryToQuadify: DONT_QUADIFY, shading: SHADING_SMOOTH })
 
 // ---------------------------------------------
