@@ -1,6 +1,6 @@
 # arx-map-boilerplate
 
-![preview](preview.png?raw=true 'preview')
+![preview](preview.jpg?raw=true 'preview')
 
 ## Getting started
 
