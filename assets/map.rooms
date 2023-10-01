@@ -1,0 +1,29 @@
+# docs: https://github.com/arx-tools/arx-level-generator/blob/main/docs/rooms.md
+
+# define the textures of a "room"
+define room {
+  ceiling custom textures [stone]-office-ceiling-tile.jpg
+  floor custom textures [fabric]-carpet.jpg
+  wall arx aliciaroom_mur02.jpg
+}
+
+define pool {
+  ceiling custom textures [stone]-white-mosaic-tile.jpg
+  wall custom textures [stone]-white-mosaic-tile.jpg
+  floor custom textures [stone]-white-mosaic-tile.jpg
+}
+
+# add the first room
+room add 500 350 500 room
+# add a light to the center of that room
+with light
+
+# add a corridor towards north
+room add 200 300 400 room y- z++
+
+# add another room and put it at the north end of the previous corridor
+room add 500 300 500 default y- z++
+with light
+
+# add a small room below the center of the last room
+room add 200 50 200 pool y--
