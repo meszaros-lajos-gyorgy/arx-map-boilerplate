@@ -19,9 +19,7 @@ import { Vector2 } from 'three'
 
 // reads the contents of the .env file
 // pass in an optional object to override certain settings
-const settings = new Settings({
-  variant: 'premium', // always produce a premium version
-})
+const settings = new Settings()
 
 // ---------------------------------------------
 
