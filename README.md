@@ -16,4 +16,4 @@
 
 ## Video showcasing how to use this repo
 
-https://www.youtube.com/watch?v=uOxCWuPXhaU&t=340s
+https://youtu.be/uOxCWuPXhaU?si=pHF1dWIfgogKemsH&t=205
