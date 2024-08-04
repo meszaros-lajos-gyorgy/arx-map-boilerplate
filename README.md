@@ -13,3 +13,7 @@
 7. copy `.env.sample` as `.env`
 8. set `outputDir` in `.env` to point to your Arx Libertatis game folder
 9. run `npm run dev`
+
+## Video showcasing how to use this repo
+
+https://www.youtube.com/watch?v=uOxCWuPXhaU&t=340s
