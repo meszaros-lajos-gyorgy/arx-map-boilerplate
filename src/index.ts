@@ -1,10 +1,12 @@
 import { ArxPolygonFlags } from 'arx-convert/types'
 import {
+  $,
   ArxMap,
   Color,
   DONT_QUADIFY,
   HudElements,
   Material,
+  Polygon,
   SHADING_SMOOTH,
   Settings,
   Texture,
@@ -15,7 +17,7 @@ import { loadRooms } from 'arx-level-generator/prefabs/rooms'
 import { Speed } from 'arx-level-generator/scripting/properties'
 import { createZone } from 'arx-level-generator/tools'
 import { applyTransformations } from 'arx-level-generator/utils'
-import { Vector2 } from 'three'
+import { Box3, Vector2 } from 'three'
 
 // reads the contents of the .env file
 // pass in an optional object to override certain settings
@@ -43,48 +45,43 @@ map.hud.hide(HudElements.Minimap)
 
 // ---------------------------------------------
 
-// load contents of assets/map.rooms and parse it
-const rooms = await loadRooms('./map.rooms', settings)
+const level8 = await ArxMap.fromOriginalLevel(8, settings)
+const offset = level8.polygons[0].vertices[0].clone().multiplyScalar(-1)
+level8.move(offset)
 
-// add all parsed rooms, lights and such to the map
-rooms.forEach((room) => {
-  map.add(room, true)
-})
+const selection1 = new Box3(new Vector3(0, 0, 0), new Vector3(500, 200, 500))
 
-// ---------------------------------------------
+const polygons1 = $(level8.polygons)
+  .selectWithinBox(selection1)
+  .copy()
+  .selectAll()
+  .move(map.config.offset)
+  .get()
 
-// add a zone right below the player's feet to change the fog color and
-// the draw distance (can be also used to set an ambience sound)
-const spawnZone = createZone({
-  name: 'spawn-zone',
-  backgroundColor: Color.fromCSS('#5a5f7a'),
-  drawDistance: 2000,
-})
+const selection2 = new Box3(new Vector3(500, -500, 500), new Vector3(800, 200, 1600))
 
-map.zones.push(spawnZone)
+const polygons2 = $(level8.polygons)
+  .clearSelection()
+  .selectWithinBox(selection2)
+  .copy()
+  .selectAll()
+  .move(map.config.offset)
+  .move(new Vector3(-400, 0, 0))
+  .get()
 
-// ---------------------------------------------
+const columns: Polygon[] = []
 
-// you can add meshes not just via rooms, but with helper functions from arx-level-generator
-const water = createPlaneMesh({
-  size: new Vector2(200, 200),
-  tileSize: 100,
-  // adding a water texture with additional flags to make it behave like water
-  texture: Material.fromTexture(Texture.waterCavewater, {
-    flags: ArxPolygonFlags.Water | ArxPolygonFlags.NoShadow,
-    opacity: 80,
-  }),
-})
-applyTransformations(water)
-// creating mesh by hand makes it absolute positioned, to make it relative to the
-// map's offset (6000/0/6000) you have to move it on all 3 axis
-// this can also be used to make additional adjustments
-water.translateX(map.config.offset.x)
-water.translateY(map.config.offset.y + 10)
-water.translateZ(map.config.offset.z + 900)
-applyTransformations(water)
-// add the mesh to the map
-map.polygons.addThreeJsMesh(water, { tryToQuadify: DONT_QUADIFY, shading: SHADING_SMOOTH })
+for(let i = 0; i < 5; i++) {
+  const column = $(polygons2)
+    .selectAll()
+    .copy()
+    .selectAll()
+    .move(new Vector3(400 * i, 0, 0))
+    .get()
+  columns.push(...column)
+}
+
+map.polygons.push(...polygons1, ...polygons2, ...columns)
 
 // ---------------------------------------------
 
