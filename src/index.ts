@@ -1,23 +1,6 @@
-import { ArxPolygonFlags } from 'arx-convert/types'
-import {
-  $,
-  ArxMap,
-  Color,
-  DONT_QUADIFY,
-  HudElements,
-  Material,
-  Polygon,
-  SHADING_SMOOTH,
-  Settings,
-  Texture,
-  Vector3,
-} from 'arx-level-generator'
-import { createPlaneMesh } from 'arx-level-generator/prefabs/mesh'
-import { loadRooms } from 'arx-level-generator/prefabs/rooms'
+import { $, ArxMap, HudElements, Polygon, Settings, Vector3 } from 'arx-level-generator'
 import { Speed } from 'arx-level-generator/scripting/properties'
-import { createZone } from 'arx-level-generator/tools'
-import { applyTransformations } from 'arx-level-generator/utils'
-import { Box3, Vector2 } from 'three'
+import { Box3 } from 'three'
 
 // reads the contents of the .env file
 // pass in an optional object to override certain settings
