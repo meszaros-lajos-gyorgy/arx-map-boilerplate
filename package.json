@@ -20,7 +20,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "arx-convert": "^9.0.1",
-    "arx-level-generator": "^21.0.0-alpha.2",
+    "arx-level-generator": "^21.0.0-alpha.3",
     "three": "^0.165.0"
   },
   "devDependencies": {
