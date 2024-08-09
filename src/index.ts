@@ -34,12 +34,7 @@ level8.move(offset)
 
 const selection1 = new Box3(new Vector3(0, 0, 0), new Vector3(500, 200, 500))
 
-const polygons1 = $(level8.polygons)
-  .selectWithinBox(selection1)
-  .copy()
-  .selectAll()
-  .move(map.config.offset)
-  .get()
+const polygons1 = $(level8.polygons).selectWithinBox(selection1).copy().selectAll().move(map.config.offset).get()
 
 const selection2 = new Box3(new Vector3(500, -500, 500), new Vector3(800, 200, 1600))
 
@@ -54,13 +49,40 @@ const polygons2 = $(level8.polygons)
 
 const columns: Polygon[] = []
 
-for(let i = 0; i < 5; i++) {
+for (let i = 0; i < 5; i++) {
   const column = $(polygons2)
     .selectAll()
     .copy()
     .selectAll()
     .move(new Vector3(400 * i, 0, 0))
     .get()
+
+  const bbox = column.getBoundingBox()
+
+  // get bounding box and align it vertically to the bottom
+  const centerOfColumn = new Vector3()
+  bbox.getCenter(centerOfColumn)
+
+  const verticalAlign = 'bottom' as 'top' | 'middle' | 'bottom'
+  switch (verticalAlign) {
+    case 'top':
+      centerOfColumn.y = Math.min(bbox.min.y, bbox.max.y)
+      break
+    case 'middle':
+      // already in the middle, nothing to do
+      break
+    case 'bottom':
+      centerOfColumn.y = Math.max(bbox.min.y, bbox.max.y)
+      break
+  }
+
+  // move to origin, scale, then move back
+  $(column)
+    .selectAll()
+    .move(centerOfColumn.clone().multiplyScalar(-1))
+    .scale(1.1 ** i)
+    .move(centerOfColumn)
+
   columns.push(...column)
 }
 
