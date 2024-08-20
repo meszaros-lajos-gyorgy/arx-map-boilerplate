@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "generate": "tsc && tsc-alias && node ./dist/src/index.js",
+    "generate:watch": "nodemon --watch src --exec \"npm run generate\" --ext ts",
     "rungame": "arx-level-generator --rungame",
     "rungame:noclip": "arx-level-generator --rungame --noclip",
     "dev": "npm run generate && npm run rungame",
@@ -27,6 +28,7 @@
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^22.1.0",
     "@types/three": "^0.165.0",
+    "nodemon": "^3.1.4",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.5.4"
   }
