@@ -1,14 +1,4 @@
-/*
-https://www.youtube.com/playlist?list=PLUDlas_Zy_qC7c5tCgTMYq2idyyT241qs
-
-Room definition examples:
-
----------------------
- example 1:
----------------------
-
-room add 500 300 500
-*/
+// https://www.youtube.com/playlist?list=PLUDlas_Zy_qC7c5tCgTMYq2idyyT241qs
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { Settings } from 'arx-level-generator'
