@@ -153,8 +153,8 @@ function tokenize(input: string, debug: boolean = false): Token[] {
 
   let lastMatch: [keyof typeof tokenMatchers, TokenMatcher] | undefined = undefined
   let newlineToken: Token | undefined
-  for (let i = 0; i < rawInput.length; i++) {
-    const char = rawInput[i]
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i]
     buffer += char
 
     if (char === '\n') {
