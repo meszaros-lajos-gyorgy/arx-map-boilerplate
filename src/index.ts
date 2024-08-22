@@ -35,6 +35,18 @@ const tokenMatchers: Record<string, TokenMatcher> = {
   keywordWall: {
     expression: /^wall$/,
   },
+  keywordWallNorth: {
+    expression: /^wall-north$/,
+  },
+  keywordWallSouth: {
+    expression: /^wall-south$/,
+  },
+  keywordWallEast: {
+    expression: /^wall-east$/,
+  },
+  keywordWallWest: {
+    expression: /^wall-west$/,
+  },
   keywordFloor: {
     expression: /^floor$/,
   },
@@ -49,6 +61,34 @@ const tokenMatchers: Record<string, TokenMatcher> = {
   },
   keywordLight: {
     expression: /^light$/,
+  },
+  keywordCursor: {
+    expression: /^cursor$/,
+  },
+  keywordSave: {
+    expression: /^save$/,
+  },
+  keywordRestore: {
+    expression: /^restore$/,
+  },
+  keywordOff: {
+    expression: /^off$/,
+  },
+
+  keywordFitX: {
+    expression: /^fit-x$/,
+  },
+  keywordFitY: {
+    expression: /^fit-y$/,
+  },
+  keywordStretch: {
+    expression: /^stretch$/,
+  },
+  keywordDim: {
+    expression: /^dim$/,
+  },
+  keywordDefault: {
+    expression: /^default$/,
   },
 
   comment: {
@@ -82,6 +122,10 @@ const tokenMatchers: Record<string, TokenMatcher> = {
     expression: /^([1-9][0-9]*|0)$/,
     storeValue: true,
   },
+  percentage: {
+    expression: /^([1-9][0-9]*|0)%$/,
+    storeValue: true,
+  },
   string: {
     expression: /^\S+$/,
     storeValue: true,
@@ -94,154 +138,153 @@ type Token = {
   at: [number, number]
 }
 
-const tokenMatcherList = Object.entries(tokenMatchers) as [keyof typeof tokenMatchers, TokenMatcher][]
+function tokenize(input: string, debug: boolean = false): Token[] {
+  const tokenMatcherList = Object.entries(tokenMatchers) as [keyof typeof tokenMatchers, TokenMatcher][]
 
-const tokens: Token[] = []
+  const tokens: Token[] = []
 
-const debug: boolean = false
+  let lineNumber = 1
+  let charNumber = 0
+  let lastCharNumber = 0
 
-let lineNumber = 1
-let charNumber = 0
-let lastCharNumber = 0
+  let buffer = ''
+  let prevLineNumber = lineNumber
+  let prevCharNumber = charNumber
 
-let buffer = ''
-let prevLineNumber = lineNumber
-let prevCharNumber = charNumber
+  let lastMatch: [keyof typeof tokenMatchers, TokenMatcher] | undefined = undefined
+  let newlineToken: Token | undefined
+  for (let i = 0; i < rawInput.length; i++) {
+    const char = rawInput[i]
+    buffer += char
 
-let lastMatch: [keyof typeof tokenMatchers, TokenMatcher] | undefined = undefined
-let failed = false
-let newlineToken: Token | undefined
-for (let i = 0; i < rawInput.length; i++) {
-  const char = rawInput[i]
-  buffer += char
-
-  if (char === '\n') {
-    newlineToken = {
-      type: 'newLine',
-      at: [lineNumber, charNumber],
+    if (char === '\n') {
+      newlineToken = {
+        type: 'newLine',
+        at: [lineNumber, charNumber],
+      }
+      lineNumber += 1
+      lastCharNumber = charNumber
+      charNumber = 0
+    } else {
+      newlineToken = undefined
+      charNumber += 1
     }
-    lineNumber += 1
-    lastCharNumber = charNumber
-    charNumber = 0
-  } else {
-    newlineToken = undefined
-    charNumber += 1
-  }
 
-  if (isWhitespace(buffer)) {
-    buffer = ''
-    prevLineNumber = lineNumber
-    prevCharNumber = charNumber
-    continue
-  }
-
-  if (debug) {
-    console.log(`${lineNumber}:${charNumber}: "${buffer}"`)
-  }
-
-  const currentMatch = tokenMatcherList.find(([, { expression }]) => {
-    return expression.test(buffer)
-  })
-
-  if (currentMatch) {
-    lastMatch = currentMatch
-    continue
-  }
-
-  if (lastMatch) {
-    if (isWhitespace(char)) {
-      if (debug) {
-        console.log('----------')
-      }
-
-      const token: Token = {
-        type: lastMatch[0],
-        at: [prevLineNumber, prevCharNumber + 1],
-      }
-
-      if (lastMatch[1].storeValue) {
-        token.value = buffer.slice(0, -1)
-      }
-
-      tokens.push(token)
-      if (newlineToken) {
-        tokens.push(newlineToken)
-      }
-
+    if (isWhitespace(buffer)) {
       buffer = ''
       prevLineNumber = lineNumber
       prevCharNumber = charNumber
-
-      lastMatch = undefined
-      i--
-      if (char === '\n') {
-        lineNumber -= 1
-        charNumber = lastCharNumber
-      } else {
-        charNumber -= 1
-      }
-
       continue
     }
 
+    if (debug) {
+      console.log(`${lineNumber}:${charNumber}: "${buffer}"`)
+    }
+
+    const currentMatch = tokenMatcherList.find(([, { expression }]) => {
+      return expression.test(buffer)
+    })
+
+    if (currentMatch) {
+      lastMatch = currentMatch
+      continue
+    }
+
+    if (lastMatch) {
+      if (isWhitespace(char)) {
+        if (debug) {
+          console.log('----------')
+        }
+
+        const token: Token = {
+          type: lastMatch[0],
+          at: [prevLineNumber, prevCharNumber + 1],
+        }
+
+        if (lastMatch[1].storeValue) {
+          token.value = buffer.slice(0, -1)
+        }
+
+        tokens.push(token)
+        if (newlineToken) {
+          tokens.push(newlineToken)
+        }
+
+        buffer = ''
+        prevLineNumber = lineNumber
+        prevCharNumber = charNumber
+
+        lastMatch = undefined
+        i--
+        if (char === '\n') {
+          lineNumber -= 1
+          charNumber = lastCharNumber
+        } else {
+          charNumber -= 1
+        }
+
+        continue
+      }
+
+      charNumber -= buffer.length - 1
+      if (buffer.includes('\n')) {
+        const numberOfNewlinesInBuffer = buffer.split('\n').length - 1
+        lineNumber -= numberOfNewlinesInBuffer
+        charNumber += lastCharNumber + numberOfNewlinesInBuffer
+      }
+      throw new Error(`[1] syntax error at ${lineNumber}:${charNumber}`)
+    }
+
+    if (isWhitespace(char)) {
+      charNumber -= buffer.length - 1
+      if (buffer.includes('\n')) {
+        const numberOfNewlinesInBuffer = buffer.split('\n').length - 1
+        lineNumber -= numberOfNewlinesInBuffer
+        charNumber += lastCharNumber + numberOfNewlinesInBuffer
+      }
+      throw new Error(`[2] syntax error at ${lineNumber}:${charNumber}`)
+    }
+  }
+
+  if (lastMatch) {
+    const token: Token = {
+      type: lastMatch[0],
+      at: [prevLineNumber, prevCharNumber + 1],
+    }
+
+    if (lastMatch[1].storeValue) {
+      token.value = buffer
+    }
+
+    if (newlineToken) {
+      tokens.push(newlineToken)
+    }
+    tokens.push(token)
+    buffer = ''
+    prevLineNumber = lineNumber
+    prevCharNumber = charNumber
+  }
+
+  if (!lastMatch && buffer !== '') {
     charNumber -= buffer.length - 1
     if (buffer.includes('\n')) {
       const numberOfNewlinesInBuffer = buffer.split('\n').length - 1
       lineNumber -= numberOfNewlinesInBuffer
       charNumber += lastCharNumber + numberOfNewlinesInBuffer
     }
-    console.error(`[1] syntax error at ${lineNumber}:${charNumber}`)
-    failed = true
-    break
+    throw new Error(`[3] syntax error at ${lineNumber}:${charNumber}`)
   }
 
-  if (isWhitespace(char)) {
-    charNumber -= buffer.length - 1
-    if (buffer.includes('\n')) {
-      const numberOfNewlinesInBuffer = buffer.split('\n').length - 1
-      lineNumber -= numberOfNewlinesInBuffer
-      charNumber += lastCharNumber + numberOfNewlinesInBuffer
-    }
-    console.error(`[2] syntax error at ${lineNumber}:${charNumber}`)
-    failed = true
-    break
-  }
+  return tokens
 }
 
-if (lastMatch && !failed) {
-  const token: Token = {
-    type: lastMatch[0],
-    at: [prevLineNumber, prevCharNumber + 1],
-  }
-
-  if (lastMatch[1].storeValue) {
-    token.value = buffer
-  }
-
-  if (newlineToken) {
-    tokens.push(newlineToken)
-  }
-  tokens.push(token)
-  buffer = ''
-  prevLineNumber = lineNumber
-  prevCharNumber = charNumber
-}
-
-if (!lastMatch && !failed && buffer !== '') {
-  charNumber -= buffer.length - 1
-  if (buffer.includes('\n')) {
-    const numberOfNewlinesInBuffer = buffer.split('\n').length - 1
-    lineNumber -= numberOfNewlinesInBuffer
-    charNumber += lastCharNumber + numberOfNewlinesInBuffer
-  }
-  console.error(`[3] syntax error at ${lineNumber}:${charNumber}`)
-  failed = true
-}
-
-if (!failed) {
+try {
+  const tokens = tokenize(rawInput, false)
   tokens.forEach(({ type, at, value }) => {
     console.log(
       `${`[${at[0].toString().padStart(2)}:${at[1].toString().padEnd(2)}]`}  ${type + (value ? ` "${value}"` : '')}`,
     )
   })
+} catch (e) {
+  console.error(e)
 }

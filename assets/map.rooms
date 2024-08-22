@@ -17,6 +17,8 @@ $roomHeight = 350
 
 # add the first room
 room add 500 $roomHeight 500 room
+# save the origin of the room to restore it later (allows branching)
+cursor save spawn
 # add a light to the center of that room
 with light
 
@@ -29,3 +31,13 @@ with light
 
 # add a small room below the center of the last room
 room add 200 50 200 pool y--
+
+# restore the position of the first room
+cursor restore spawn
+
+# add a corridor south
+room add 200 300 600 room z--
+
+# and another room with light afterwards
+room add 600 350 600 room z--
+with light 20%
