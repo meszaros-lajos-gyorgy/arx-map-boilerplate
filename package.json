@@ -19,14 +19,14 @@
   "author": ">> add your name here <<",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "arx-convert": "^9.0.1",
-    "arx-level-generator": "^21.0.0-alpha.1",
-    "three": "^0.165.0"
+    "arx-convert": "^10.1.1",
+    "arx-level-generator": "^21.0.0-alpha.11",
+    "three": "^0.167.0"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^22.1.0",
-    "@types/three": "^0.165.0",
+    "@types/three": "^0.167.0",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.5.4"
   }

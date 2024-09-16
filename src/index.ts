@@ -89,7 +89,7 @@ map.polygons.addThreeJsMesh(water, { tryToQuadify: DONT_QUADIFY, shading: SHADIN
 // ---------------------------------------------
 
 // trigger the calculation of entity ids, rendering of script event handlers and so on...
-map.finalize()
+map.finalize(settings)
 
 // export everything to a format which Arx can understand
 await map.saveToDisk(settings)
