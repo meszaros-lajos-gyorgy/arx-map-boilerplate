@@ -1,29 +1,83 @@
-# docs: https://github.com/arx-tools/arx-level-generator/blob/main/docs/rooms.md
 
-# define the textures of a "room"
-define room {
-  ceiling custom textures [stone]-office-ceiling-tile.jpg
-  floor custom textures [fabric]-carpet.jpg
-  wall arx aliciaroom_mur02.jpg
-}
+$szobaMagassag = 350
+$ajtoMagassagKis = 250
+$ajtoMagassagNagy = 300
+$ajtoMelyseg = 50
+$ablakMagassag = 250
 
-define pool {
-  ceiling custom textures [stone]-white-mosaic-tile.jpg
-  wall custom textures [stone]-white-mosaic-tile.jpg
-  floor custom textures [stone]-white-mosaic-tile.jpg
-}
+# bejárat
+room add 200 $ajtoMagassagKis $ajtoMelyseg default
+cursor save bejarat
 
-# add the first room
-room add 500 350 500 room
-# add a light to the center of that room
-with light
+# előszoba
+room add 300 $szobaMagassag 800 default z++
+cursor save eloszoba
 
-# add a corridor towards north
-room add 200 300 400 room y- z++
+# nappali
+room add 0 0 -50 default x-- z--
+room add $ajtoMelyseg $ajtoMagassagKis 200 default x-- z-
+room add 0 0 -50 default x-- z+
+room add 800 $szobaMagassag 650 default x-- z--
+cursor save nappali
 
-# add another room and put it at the north end of the previous corridor
-room add 500 300 500 default y- z++
-with light
+# nappali > ablak
+room add 0 $szobaMagassag -50 default x+ z-- y
+room add 50 $ablakMagassag 200 default x++ y z-
 
-# add a small room below the center of the last room
-room add 200 50 200 pool y--
+# belső szoba
+cursor restore nappali
+room add 200 $ajtoMagassagNagy $ajtoMelyseg default z--
+room add 800 $szobaMagassag 650 default z--
+cursor save belso-szoba
+
+# belső szoba > 2 ablak
+room add 0 $szobaMagassag -50 default x+ z-- y
+room add 50 $ablakMagassag 200 default x++ y z-
+cursor restore belso-szoba
+room add 0 $szobaMagassag -50 default x+ z++ y
+room add 50 $ablakMagassag 200 default x++ y z+
+
+# fürdőszoba
+cursor restore nappali
+room add -50 0 0 default x-- z+
+room add 150 $ajtoMagassagKis $ajtoMelyseg default z++ x-
+room add 50 0 0 default x-- z++
+room add 350 $szobaMagassag 450 default x- z++
+room add 20 $ablakMagassag 250 default y x++
+
+# wc
+cursor restore eloszoba
+# room add 0 0 -50 default x-- z++
+room add $ajtoMelyseg $ajtoMagassagKis 200 default x-- z+
+cursor save wc-ajto
+room add 350 $szobaMagassag 200 default x--
+room add 20 $ablakMagassag 200 default x-- y
+
+# spejz
+cursor restore wc-ajto
+room add 0 0 50 default z--
+room add $ajtoMelyseg $ajtoMagassagKis 200 default z--
+room add 350 $szobaMagassag 200 default x--
+room add 20 $ablakMagassag 200 default x-- y
+
+# konyha
+cursor restore eloszoba
+room add 0 0 100 default x+ z-
+room add $ajtoMelyseg $ajtoMagassagKis 200 default x- z++
+room add 0 0 100 default x++ z--
+room add 600 $szobaMagassag 800 default x++ z-
+
+# konyha > ablak
+room add 200 $ablakMagassag 50 default y z--
+
+# ------------------------
+
+cursor restore bejarat
+
+# gang
+room add 300 $szobaMagassag 1000 default z--
+room add 1000 $szobaMagassag 300 default z+ x++
+
+room add 1000 1050 700 default x+ z-- y
+
+# TODO: ajtó mélység legyen 20, ne 50

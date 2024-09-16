@@ -51,6 +51,7 @@ rooms.forEach((room) => {
   map.add(room, true)
 })
 
+/*
 // ---------------------------------------------
 
 // add a zone right below the player's feet to change the fog color and
@@ -85,6 +86,7 @@ water.translateZ(map.config.offset.z + 900)
 applyTransformations(water)
 // add the mesh to the map
 map.polygons.addThreeJsMesh(water, { tryToQuadify: DONT_QUADIFY, shading: SHADING_SMOOTH })
+*/
 
 // ---------------------------------------------
 
