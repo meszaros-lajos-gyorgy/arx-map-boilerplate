@@ -45,6 +45,9 @@ room add 50 0 0 default x-- z++
 room add 350 $szobaMagassag 450 default x- z++
 room add 20 $ablakMagassag 250 default y x++
 
+# lichthof
+room add 60 850 450 default x++ y
+
 # wc
 cursor restore eloszoba
 # room add 0 0 -50 default x-- z++
@@ -78,6 +81,33 @@ cursor restore bejarat
 room add 300 $szobaMagassag 1000 default z--
 room add 1000 $szobaMagassag 300 default z+ x++
 
-room add 1000 1050 700 default x+ z-- y
+room add 1000 450 700 default x+ z-- y
+cursor save udvar
+
+# emeletek lefelé
+room add 1300 $szobaMagassag 1000 default y-- x+ z-
+room add 1000 50 700 default y-- x+ z-
+room add 1300 $szobaMagassag 1000 default y-- x+ z-
+
+# emeletek felfelé
+cursor restore udvar
+room add 1300 $szobaMagassag 1000 default y++ x+ z-
+room add 1000 50 700 default y++ x+ z-
+
+# középső udvar blokk
+cursor restore udvar
+room add 500 1250 1000 default x++ y z-
+room add 500 350 1000 default y--
+
+# átellenes emeletek
+
+room add 1300 $szobaMagassag 1000 default y- z- x++
+room add 1000 50 700 default y++ x- z-
+room add 1300 $szobaMagassag 1000 default y++ x- z-
+room add 1000 50 700 default y++ x- z-
+room add 1300 $szobaMagassag 1000 default y++ x- z-
+room add 1000 50 700 default y++ x- z-
+room add 1300 $szobaMagassag 1000 default y++ x- z-
+room add 1000 50 700 default y++ x- z-
 
 # TODO: ajtó mélység legyen 20, ne 50

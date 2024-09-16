@@ -15,7 +15,7 @@ import { loadRooms } from 'arx-level-generator/prefabs/rooms'
 import { Speed } from 'arx-level-generator/scripting/properties'
 import { createZone } from 'arx-level-generator/tools'
 import { applyTransformations } from 'arx-level-generator/utils'
-import { Vector2 } from 'three'
+import { MathUtils, Vector2 } from 'three'
 
 // reads the contents of the .env file
 // pass in an optional object to override certain settings
@@ -28,6 +28,9 @@ const map = new ArxMap()
 
 // move to the center of the map, everything will be offset from this point
 map.config.offset = new Vector3(6000, 0, 6000)
+
+map.player.position.add(new Vector3(1000, 0, -150))
+map.player.orientation.y = MathUtils.degToRad(90)
 
 // move the player a bit higher so that he doesn't sink into the floor
 map.player.position.adjustToPlayerHeight()
