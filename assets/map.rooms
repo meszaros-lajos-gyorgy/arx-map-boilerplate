@@ -1,4 +1,8 @@
 
+define udvar {
+  ceiling off
+}
+
 $szobaMagassag = 350
 $ajtoMagassagKis = 250
 $ajtoMagassagNagy = 300
@@ -92,11 +96,11 @@ room add 1300 $szobaMagassag 1000 default y-- x+ z-
 # emeletek felfelé
 cursor restore udvar
 room add 1300 $szobaMagassag 1000 default y++ x+ z-
-room add 1000 50 700 default y++ x+ z-
+room add 1000 50 700 udvar y++ x+ z-
 
 # középső udvar blokk
 cursor restore udvar
-room add 500 1250 1000 default x++ y z-
+room add 500 1250 1000 udvar x++ y z-
 room add 500 350 1000 default y--
 
 # átellenes emeletek
@@ -108,6 +112,6 @@ room add 1000 50 700 default y++ x- z-
 room add 1300 $szobaMagassag 1000 default y++ x- z-
 room add 1000 50 700 default y++ x- z-
 room add 1300 $szobaMagassag 1000 default y++ x- z-
-room add 1000 50 700 default y++ x- z-
+room add 1000 50 700 udvar y++ x- z-
 
 # TODO: ajtó mélység legyen 20, ne 50
