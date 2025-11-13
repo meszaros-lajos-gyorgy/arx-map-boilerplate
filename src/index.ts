@@ -3,8 +3,10 @@ import {
   ArxMap,
   Color,
   DONT_QUADIFY,
+  Entity,
   HudElements,
   Material,
+  Rotation,
   SHADING_SMOOTH,
   Settings,
   Texture,
@@ -12,10 +14,12 @@ import {
 } from 'arx-level-generator'
 import { createPlaneMesh } from 'arx-level-generator/prefabs/mesh'
 import { loadRooms } from 'arx-level-generator/prefabs/rooms'
-import { Speed } from 'arx-level-generator/scripting/properties'
+import { useDelay } from 'arx-level-generator/scripting/hooks'
+import { PlayerControls, Speed, Variable } from 'arx-level-generator/scripting/properties'
 import { createZone } from 'arx-level-generator/tools'
 import { applyTransformations } from 'arx-level-generator/utils'
-import { Vector2 } from 'three'
+import { MathUtils, Vector2 } from 'three'
+import { Ladder } from './entities/ladder.js'
 
 // reads the contents of the .env file
 // pass in an optional object to override certain settings
@@ -85,6 +89,60 @@ water.translateZ(map.config.offset.z + 900)
 applyTransformations(water)
 // add the mesh to the map
 map.polygons.addThreeJsMesh(water, { tryToQuadify: DONT_QUADIFY, shading: SHADING_SMOOTH })
+
+// ---------------------------------------------
+
+const teleportPoint = Entity.marker.at({
+  position: new Vector3(0, -10, 900),
+})
+map.entities.push(teleportPoint)
+
+// ---
+
+const playerTeleportTarget = new Variable('string', 'player_teleport_target', '')
+map.player.script?.properties.push(playerTeleportTarget)
+
+map.player.script?.on('teleport_to', () => {
+  const { delay } = useDelay()
+
+  return `
+    set ${playerTeleportTarget.name} ~^$param1~
+
+    worldfade out 1500 ${Color.fromCSS('black').toScriptColor()}
+    ${PlayerControls.off}
+
+    play FootStep_shoe_wood_step3
+    ${delay(300)} play FootStep_shoe_wood_step2
+    ${delay(300)} play FootStep_shoe_wood_step3
+    ${delay(300)} play FootStep_shoe_wood_step4
+    ${delay(300)} play FootStep_shoe_wood_step
+
+    ${delay(300)} teleport ~${playerTeleportTarget.name}~
+
+    ${delay(0)} worldfade in 500
+    ${delay(500)} ${PlayerControls.on}
+  `
+})
+
+// ---
+
+const rootLadder = new Ladder()
+rootLadder.script?.makeIntoRoot()
+map.entities.push(rootLadder)
+
+// ---
+
+const ladder = new Ladder({
+  position: new Vector3(-100, -10, 0),
+  orientation: new Rotation(0, 0, MathUtils.degToRad(-90)),
+  name: 'double click me to teleport the player to the teleportPoint marker!',
+})
+ladder.script?.on('action', () => {
+  return `
+    sendevent teleport_to player ${teleportPoint.ref}
+  `
+})
+map.entities.push(ladder)
 
 // ---------------------------------------------
 
