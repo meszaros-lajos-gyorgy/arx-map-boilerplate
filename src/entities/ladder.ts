@@ -1,7 +1,7 @@
-import { Entity, EntityConstructorPropsWithoutSrc, EntityModel } from 'arx-level-generator'
+import { Entity, EntityConstructorPropsWithoutSrc, EntityModel, Rotation } from 'arx-level-generator'
 import { Label, Material, Shadow } from 'arx-level-generator/scripting/properties'
 import { getLowestPolygonIdx, loadOBJ, normalizeUV } from 'arx-level-generator/tools/mesh'
-import { Vector2 } from 'three'
+import { MathUtils, Vector2 } from 'three'
 
 type LadderConstructorProps = EntityConstructorPropsWithoutSrc & {
   name?: string
@@ -12,6 +12,7 @@ const ladderObj = await loadOBJ('entities/ladder/ladder', {
   verticalAlign: 'bottom',
   scale: 0.1,
   scaleUV: new Vector2(1, -1),
+  orientation: new Rotation(MathUtils.degToRad(90), MathUtils.degToRad(90), MathUtils.degToRad(0)),
 })
 
 const ladderMesh = ladderObj.meshes[0]

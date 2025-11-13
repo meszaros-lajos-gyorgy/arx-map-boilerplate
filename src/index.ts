@@ -92,13 +92,6 @@ map.polygons.addThreeJsMesh(water, { tryToQuadify: DONT_QUADIFY, shading: SHADIN
 
 // ---------------------------------------------
 
-const teleportPoint = Entity.marker.at({
-  position: new Vector3(0, -10, 900),
-})
-map.entities.push(teleportPoint)
-
-// ---
-
 const playerTeleportTarget = new Variable('string', 'player_teleport_target', '')
 map.player.script?.properties.push(playerTeleportTarget)
 
@@ -132,17 +125,31 @@ map.entities.push(rootLadder)
 
 // ---
 
-const ladder = new Ladder({
-  position: new Vector3(-100, -10, 0),
-  orientation: new Rotation(0, 0, MathUtils.degToRad(-90)),
-  name: 'double click me to teleport the player to the teleportPoint marker!',
+const pointA = Entity.marker.at({
+  position: new Vector3(0, -10, 0),
 })
-ladder.script?.on('action', () => {
-  return `
-    sendevent teleport_to player ${teleportPoint.ref}
-  `
+map.entities.push(pointA)
+
+const pointB = Entity.marker.at({
+  position: new Vector3(0, -10, 900),
 })
-map.entities.push(ladder)
+map.entities.push(pointB)
+
+const ladderA = new Ladder({
+  position: new Vector3(-100, 50, 0),
+  orientation: new Rotation(0, MathUtils.degToRad(15), 0),
+  name: 'double click to go to point b',
+})
+ladderA.script?.on('action', () => `sendevent teleport_to player ${pointB.ref}`)
+map.entities.push(ladderA)
+
+const ladderB = new Ladder({
+  position: new Vector3(-130, 50, 900),
+  orientation: new Rotation(0, MathUtils.degToRad(-7), 0),
+  name: 'double click to go to point a',
+})
+ladderB.script?.on('action', () => `sendevent teleport_to player ${pointA.ref}`)
+map.entities.push(ladderB)
 
 // ---------------------------------------------
 
