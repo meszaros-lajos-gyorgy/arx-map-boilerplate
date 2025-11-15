@@ -16,6 +16,7 @@ import { Speed } from 'arx-level-generator/scripting/properties'
 import { createZone } from 'arx-level-generator/tools'
 import { applyTransformations } from 'arx-level-generator/utils'
 import { Vector2 } from 'three'
+import { loadCastle } from './prefabs/washbin.js'
 
 // reads the contents of the .env file
 // pass in an optional object to override certain settings
@@ -58,7 +59,7 @@ rooms.forEach((room) => {
 const spawnZone = createZone({
   name: 'spawn-zone',
   backgroundColor: Color.fromCSS('#5a5f7a'),
-  drawDistance: 2000,
+  drawDistance: 10000,
 })
 
 map.zones.push(spawnZone)
@@ -85,6 +86,13 @@ water.translateZ(map.config.offset.z + 900)
 applyTransformations(water)
 // add the mesh to the map
 map.polygons.addThreeJsMesh(water, { tryToQuadify: DONT_QUADIFY, shading: SHADING_SMOOTH })
+
+// ---------------------------------------------
+
+const washbin = await loadCastle(settings)
+washbin.forEach((polygon) => {
+  map.polygons.push(polygon)
+})
 
 // ---------------------------------------------
 
